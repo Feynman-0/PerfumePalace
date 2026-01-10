@@ -6,9 +6,12 @@ echo "Starting Railway deployment setup..."
 echo "Waiting for database connection..."
 sleep 5
 
-# Check if already installed
-if [ ! -f "storage/installed" ]; then
-    echo "First time setup - running migrations and seeding..."
+# Check if database tables exist
+echo "Checking if database is initialized..."
+TABLE_COUNT=$(php artisan tinker --execute="echo \DB::table('information_schema.tables')->where('table_schema', env('MYSQLDATABASE', 'railway'))->count();" 2>/dev/null || echo "0")
+
+if [ "$TABLE_COUNT" -lt "5" ]; then
+    echo "Database empty or incomplete - running migrations and seeding..."
     
     # Run migrations
     echo "Running database migrations..."
@@ -23,7 +26,10 @@ if [ ! -f "storage/installed" ]; then
     touch storage/installed
     echo "Installation marker created at storage/installed"
 else
-    echo "Already installed - skipping migrations and seeding"
+    echo "Database already initialized - skipping migrations and seeding"
+    # Run migrations without seeding (in case of new migrations)
+    echo "Running any new migrations..."
+    php artisan migrate --force --no-interaction
 fi
 
 # Create storage link
