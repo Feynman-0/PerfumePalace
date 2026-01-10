@@ -43,11 +43,6 @@ class CanInstall
      */
     public function isAlreadyInstalled()
     {
-        // For production deployment - always return true to skip installer
-        if (env('APP_ENV') === 'production') {
-            return true;
-        }
-
         // Check environment variable first (for Railway deployment)
         if (env('BAGISTO_INSTALLED', false)) {
             return true;
