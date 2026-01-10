@@ -42,25 +42,74 @@ return [
             'synchronous'             => null,
         ],
 
-        'mysql' => [
-            'driver'         => 'mysql',
-            'url'            => env('DB_URL'),
-            'host'           => env('DB_HOST', '127.0.0.1'),
-            'port'           => env('DB_PORT', '3306'),
-            'database'       => env('DB_DATABASE', 'laravel'),
-            'username'       => env('DB_USERNAME', 'root'),
-            'password'       => env('DB_PASSWORD', ''),
-            'unix_socket'    => env('DB_SOCKET', ''),
-            'charset'        => env('DB_CHARSET', 'utf8mb4'),
-            'collation'      => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
-            'prefix'         => env('DB_PREFIX', ''),
-            'prefix_indexes' => true,
-            'strict'         => false,
-            'engine'         => null,
-            'options'        => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
-        ],
+        'mysql' => (function() {
+            // Parse Railway's DATABASE_URL if available
+            $databaseUrl = env('DATABASE_URL');
+            if ($databaseUrl) {
+                $url = parse_url($databaseUrl);
+                return [
+                    'driver'         => 'mysql',
+                    'host'           => $url['host'] ?? '127.0.0.1',
+                    'port'           => $url['port'] ?? '3306',
+                    'database'       => ltrim($url['path'] ?? '/laravel', '/'),
+                    'username'       => $url['user'] ?? 'root',
+                    'password'       => $url['pass'] ?? '',
+                    'unix_socket'    => '',
+                    'charset'        => 'utf8mb4',
+                    'collation'      => 'utf8mb4_unicode_ci',
+                    'prefix'         => env('DB_PREFIX', ''),
+                    'prefix_indexes' => true,
+                    'strict'         => false,
+                    'engine'         => null,
+                    'options'        => extension_loaded('pdo_mysql') ? array_filter([
+                        PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                    ]) : [],
+                ];
+            }
+            
+            // Check for Railway MySQL variables
+            if (env('MYSQLHOST')) {
+                return [
+                    'driver'         => 'mysql',
+                    'host'           => env('MYSQLHOST', '127.0.0.1'),
+                    'port'           => env('MYSQLPORT', '3306'),
+                    'database'       => env('MYSQLDATABASE', 'railway'),
+                    'username'       => env('MYSQLUSER', 'root'),
+                    'password'       => env('MYSQLPASSWORD', ''),
+                    'unix_socket'    => '',
+                    'charset'        => 'utf8mb4',
+                    'collation'      => 'utf8mb4_unicode_ci',
+                    'prefix'         => env('DB_PREFIX', ''),
+                    'prefix_indexes' => true,
+                    'strict'         => false,
+                    'engine'         => null,
+                    'options'        => extension_loaded('pdo_mysql') ? array_filter([
+                        PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                    ]) : [],
+                ];
+            }
+            
+            // Fallback to individual env variables
+            return [
+                'driver'         => 'mysql',
+                'url'            => env('DB_URL'),
+                'host'           => env('DB_HOST', '127.0.0.1'),
+                'port'           => env('DB_PORT', '3306'),
+                'database'       => env('DB_DATABASE', 'laravel'),
+                'username'       => env('DB_USERNAME', 'root'),
+                'password'       => env('DB_PASSWORD', ''),
+                'unix_socket'    => env('DB_SOCKET', ''),
+                'charset'        => env('DB_CHARSET', 'utf8mb4'),
+                'collation'      => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+                'prefix'         => env('DB_PREFIX', ''),
+                'prefix_indexes' => true,
+                'strict'         => false,
+                'engine'         => null,
+                'options'        => extension_loaded('pdo_mysql') ? array_filter([
+                    PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                ]) : [],
+            ];
+        })(),
 
         'mariadb' => [
             'driver'         => 'mariadb',
