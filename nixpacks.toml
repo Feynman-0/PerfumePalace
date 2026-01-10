@@ -15,6 +15,13 @@ nixPkgs = [
     'php82Extensions.ctype',
     'php82Extensions.fileinfo',
     'php82Extensions.dom',
+    'php82Extensions.exif',
+    'php82Extensions.pcntl',
+    'php82Extensions.opcache',
+    'php82Extensions.soap',
+    'libpng',
+    'libjpeg',
+    'freetype',
     'composer',
     'nodejs'
 ]
