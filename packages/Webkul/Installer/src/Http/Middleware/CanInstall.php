@@ -43,6 +43,11 @@ class CanInstall
      */
     public function isAlreadyInstalled()
     {
+        // Check environment variable first (for Railway deployment)
+        if (env('BAGISTO_INSTALLED', false)) {
+            return true;
+        }
+
         if (file_exists(storage_path('installed'))) {
             return true;
         }

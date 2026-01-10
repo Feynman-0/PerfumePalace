@@ -6,13 +6,25 @@ echo "Starting Railway deployment setup..."
 echo "Waiting for database connection..."
 sleep 5
 
-# Run migrations
-echo "Running database migrations..."
-php artisan migrate --force --no-interaction
-
-# Seed the database
-echo "Seeding database..."
-php artisan db:seed --force --no-interaction
+# Check if already installed
+if [ ! -f "storage/installed" ]; then
+    echo "First time setup - running migrations and seeding..."
+    
+    # Run migrations
+    echo "Running database migrations..."
+    php artisan migrate --force --no-interaction
+    
+    # Seed the database
+    echo "Seeding database..."
+    php artisan db:seed --force --no-interaction
+    
+    # Create installed marker
+    echo "Creating installed marker..."
+    touch storage/installed
+    echo "Installation marker created at storage/installed"
+else
+    echo "Already installed - skipping migrations and seeding"
+fi
 
 # Create storage link
 echo "Creating storage link..."
