@@ -1,0 +1,51 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules
+vendor
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Testing
+tests
+.phpunit.result.cache
+
+# Documentation
+*.md
+!README.md
+
+# Build files
+.editorconfig
+.eslintrc
+.prettierrc
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Storage (will be recreated)
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+
+# Python
+*.py
+__pycache__
+
+# Misc
+*.log
+npm-debug.log
+yarn-error.log
